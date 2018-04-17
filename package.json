@@ -1,0 +1,34 @@
+{
+  "name": "reactjs-captcha",
+  "version": "1.0.0",
+  "description": "BotDetect Captcha React Component (JavaScript: React 0.13.x/0.14.x/15/16+)",
+  "scripts": {
+    "build": "npx babel src --out-dir dist --presets env,react",
+    "buildcomponent": "npx babel src/reactjs-captcha.jsx -o dist/reactjs-captcha.js --presets env,react"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/captcha-com/reactjs-captcha.git"
+  },
+  "homepage": "https://captcha.com/react-captcha.html",
+  "keywords": [
+    "captcha",
+    "react-captcha",
+    "captcha-generator",
+    "react-component",
+    "botdetect"
+  ],
+  "main": "index.js",
+  "author": "BotDetect Captcha",
+  "bugs": {
+    "url": "https://captcha.com/support"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.24.1"
+  },
+  "dependencies": {
+    "react": "^0.13.0"
+  }
+}
