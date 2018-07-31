@@ -13,9 +13,11 @@
   "homepage": "https://captcha.com/react-captcha.html",
   "keywords": [
     "captcha",
-    "react-captcha",
-    "captcha-generator",
-    "react-component",
+    "react captcha",
+    "reactjs captcha",
+    "captcha generator",
+    "react captcha component",
+    "reactjs captcha component",
     "botdetect"
   ],
   "main": "index.js",
@@ -24,11 +26,9 @@
     "url": "https://captcha.com/support"
   },
   "devDependencies": {
+    "react": "^0.13.0",
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1"
-  },
-  "dependencies": {
-    "react": "^0.13.0"
   }
 }
