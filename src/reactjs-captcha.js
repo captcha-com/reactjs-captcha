@@ -12,6 +12,10 @@ class Captcha extends React.Component {
             ? window.botdetect.getInstanceByStyleName(this.props.styleName) : null;
     }
 
+    componentWillMount() {
+        helper.addCustomEventPolyfill();
+    }
+
     componentDidMount() {
         let self = this;
         let captchaStyleNameProp = self.props.styleName || 'defaultCaptcha';

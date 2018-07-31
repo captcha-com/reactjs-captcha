@@ -27,6 +27,11 @@ var Captcha = function (_React$Component) {
             return window.botdetect !== undefined ? window.botdetect.getInstanceByStyleName(this.props.styleName) : null;
         }
     }, {
+        key: 'componentWillMount',
+        value: function componentWillMount() {
+            helper.addCustomEventPolyfill();
+        }
+    }, {
         key: 'componentDidMount',
         value: function componentDidMount() {
             var self = this;

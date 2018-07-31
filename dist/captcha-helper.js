@@ -6,15 +6,17 @@ module.exports.spread = function (initArr, addArr) {
         initArr[addArrKeys[i]] = addArr[addArrKeys[i]];
     }
 };
+
 module.exports.getScript = function (url, callback) {
     this.ajax(url, function (responseText) {
         var f = new Function(responseText);
         f();
         if (typeof callback === 'function') {
-            setTimeout(callback, 100);
+            setTimeout(callback, 200);
         }
     });
 };
+
 module.exports.addValidateEvent = function (instance) {
     var self = this;
     var inputElm = document.getElementById(instance.options.userInputID);
@@ -38,6 +40,7 @@ module.exports.addValidateEvent = function (instance) {
         }
     }
 };
+
 module.exports.ajax = function (url, params, callback) {
     if (typeof params === 'function') {
         callback = params;
@@ -67,5 +70,17 @@ module.exports.ajax = function (url, params, callback) {
             x.open('GET', url, true);
             x.send(params);
         }
+    }
+};
+
+module.exports.addCustomEventPolyfill = function () {
+    if (typeof window.CustomEvent !== 'function') {
+        window.CustomEvent = function (event, params) {
+            params = params || { bubbles: false, cancelable: false, detail: undefined };
+            var evt = document.createEvent('CustomEvent');
+            evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
+            return evt;
+        };
+        window.CustomEvent.prototype = window.Event.prototype;
     }
 };

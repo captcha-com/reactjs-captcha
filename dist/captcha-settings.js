@@ -1,6 +1,7 @@
 'use strict';
 
 var helper = require('./captcha-helper');
+
 window.bdc_react_settings = window.bdc_react_settings || { captchaEndpoint: 'botdetectcaptcha' };
 var settings = {
     config: window.bdc_react_settings,
