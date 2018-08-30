@@ -12,7 +12,7 @@ module.exports.getScript = function (url, callback) {
         var f = new Function(responseText);
         f();
         if (typeof callback === 'function') {
-            setTimeout(callback, 200);
+            callback();
         }
     });
 };
@@ -41,12 +41,7 @@ module.exports.addValidateEvent = function (instance) {
     }
 };
 
-module.exports.ajax = function (url, params, callback) {
-    if (typeof params === 'function') {
-        callback = params;
-        params = null;
-    }
-
+module.exports.ajax = function (url, callback) {
     function xhr() {
         var x = null;
         try {
@@ -68,7 +63,7 @@ module.exports.ajax = function (url, params, callback) {
                 }
             };
             x.open('GET', url, true);
-            x.send(params);
+            x.send();
         }
     }
 };

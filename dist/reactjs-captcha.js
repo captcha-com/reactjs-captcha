@@ -24,7 +24,11 @@ var Captcha = function (_React$Component) {
     _createClass(Captcha, [{
         key: 'getInstance',
         value: function getInstance() {
-            return window.botdetect !== undefined ? window.botdetect.getInstanceByStyleName(this.props.styleName) : null;
+            var instance = null;
+            if (typeof window.botdetect !== 'undefined') {
+                return window.botdetect.getInstanceByStyleName(this.props.styleName);
+            }
+            return instance;
         }
     }, {
         key: 'componentWillMount',
@@ -35,35 +39,28 @@ var Captcha = function (_React$Component) {
         key: 'componentDidMount',
         value: function componentDidMount() {
             var self = this;
-            var captchaStyleNameProp = self.props.styleName || 'defaultCaptcha';
-            var captchaEndpointProp = settings.get().captchaEndpoint;
-            var url = captchaEndpointProp + '?get=html&c=' + captchaStyleNameProp;
+            var captchaStyleName = self.props.styleName || 'defaultCaptcha';
+            var url = settings.get().captchaEndpoint + '?get=html&c=' + captchaStyleName;
 
             helper.ajax(url, function (data) {
-                var target = document.getElementById('BDC_CaptchaComponent_' + self.props.styleName);
+                var target = document.getElementById('BDC_CaptchaComponent_' + captchaStyleName);
                 target.innerHTML = data.replace(/<script.*<\/script>/g, '');
-                self.loadScriptIncludes(captchaStyleNameProp, captchaEndpointProp, function () {
+                self.loadScriptIncludes(captchaStyleName, function () {
                     var instance = self.getInstance();
                     if (instance) {
                         helper.addValidateEvent(instance);
                     } else {
-                        console.error('window.botdetect undefined!');
+                        console.error('window.botdetect undefined');
                     }
                 });
             });
         }
     }, {
         key: 'loadScriptIncludes',
-        value: function loadScriptIncludes(styleName, endpoint, callback) {
-            helper.getScript(endpoint + '?get=script-include', function () {
-                var captchaId = document.getElementById('BDC_VCID_' + styleName).value;
-
-                helper.getScript(endpoint + '?get=init-script-include&c=' + styleName + '&t=' + captchaId + '&cs=203', function () {
-                    if (typeof callback === 'function') {
-                        callback();
-                    }
-                });
-            });
+        value: function loadScriptIncludes(styleName, callback) {
+            var captchaId = document.getElementById('BDC_VCID_' + styleName).value;
+            var scriptIncludeUrl = settings.get().captchaEndpoint + '?get=script-include&c=' + styleName + '&t=' + captchaId + '&cs=203';
+            helper.getScript(scriptIncludeUrl, callback);
         }
     }, {
         key: 'render',

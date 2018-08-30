@@ -8,8 +8,11 @@ class Captcha extends React.Component {
     }
 
     getInstance() {
-        return (window.botdetect !== undefined)
-            ? window.botdetect.getInstanceByStyleName(this.props.styleName) : null;
+        let instance = null;
+        if (typeof window.botdetect !== 'undefined') {
+            return window.botdetect.getInstanceByStyleName(this.props.styleName);
+        }
+        return instance;
     }
 
     componentWillMount() {
@@ -18,35 +21,27 @@ class Captcha extends React.Component {
 
     componentDidMount() {
         let self = this;
-        let captchaStyleNameProp = self.props.styleName || 'defaultCaptcha';
-        let captchaEndpointProp = settings.get().captchaEndpoint;
-        let url = captchaEndpointProp + '?get=html&c=' + captchaStyleNameProp;
+        let captchaStyleName = self.props.styleName || 'defaultCaptcha';
+        let url = settings.get().captchaEndpoint + '?get=html&c=' + captchaStyleName;
 
         helper.ajax(url, function (data) {
-            let target = document.getElementById('BDC_CaptchaComponent_' + self.props.styleName);
+            let target = document.getElementById('BDC_CaptchaComponent_' + captchaStyleName);
             target.innerHTML = data.replace(/<script.*<\/script>/g, '');
-            self.loadScriptIncludes(captchaStyleNameProp, captchaEndpointProp, function () {
+            self.loadScriptIncludes(captchaStyleName, function () {
                 let instance = self.getInstance();
                 if (instance) {
                     helper.addValidateEvent(instance);
                 } else {
-                    console.error('window.botdetect undefined!');
+                    console.error('window.botdetect undefined');
                 }
             })
         });
     }
 
-    loadScriptIncludes(styleName, endpoint, callback) {
-        helper.getScript(endpoint + '?get=script-include', function () {
-            let captchaId = document.getElementById('BDC_VCID_' + styleName).value;
-
-            helper.getScript(endpoint + '?get=init-script-include&c='
-                + styleName + '&t=' + captchaId + '&cs=203', function () {
-                if (typeof callback === 'function') {
-                    callback();
-                }
-            });
-        });
+    loadScriptIncludes(styleName, callback) {
+        let captchaId = document.getElementById('BDC_VCID_' + styleName).value;
+        let scriptIncludeUrl = settings.get().captchaEndpoint + '?get=script-include&c=' + styleName + '&t=' + captchaId + '&cs=203';
+        helper.getScript(scriptIncludeUrl, callback);
     }
 
     render() {
