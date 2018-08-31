@@ -1,17 +1,17 @@
 'use strict';
 
-var helper = require('./captcha-helper');
+var captchaHelper = require('./captcha-helper');
 
 window.bdc_react_settings = window.bdc_react_settings || { captchaEndpoint: 'botdetectcaptcha' };
-var settings = {
+var captchaSettings = {
     config: window.bdc_react_settings,
     get: function get() {
         this.config.captchaEndpoint = this.config.captchaEndpoint.replace(/\/+$/g, '');
         return this.config;
     },
-    set: function set(obj) {
-        helper.spread(this.config, obj);
+    set: function set(settings) {
+        captchaHelper.spread(this.config, settings);
     }
 };
 
-module.exports = settings;
+module.exports = captchaSettings;

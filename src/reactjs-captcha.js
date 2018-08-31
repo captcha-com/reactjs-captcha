@@ -1,6 +1,6 @@
 var React = require('react');
-var settings = require('./captcha-settings');
-var helper = require('./captcha-helper');
+var captchaSettings = require('./captcha-settings');
+var captchaHelper = require('./captcha-helper');
 
 class Captcha extends React.Component {
     constructor(props) {
@@ -16,23 +16,23 @@ class Captcha extends React.Component {
     }
 
     componentWillMount() {
-        helper.addCustomEventPolyfill();
+        captchaHelper.addCustomEventPolyfill();
     }
 
     componentDidMount() {
         let self = this;
         let captchaStyleName = self.props.styleName || 'defaultCaptcha';
-        let url = settings.get().captchaEndpoint + '?get=html&c=' + captchaStyleName;
+        let url = captchaSettings.get().captchaEndpoint + '?get=html&c=' + captchaStyleName;
 
-        helper.ajax(url, function (data) {
+        captchaHelper.ajax(url, function(data) {
             let target = document.getElementById('BDC_CaptchaComponent_' + captchaStyleName);
             target.innerHTML = data.replace(/<script.*<\/script>/g, '');
-            self.loadScriptIncludes(captchaStyleName, function () {
+            self.loadScriptIncludes(captchaStyleName, function() {
                 let instance = self.getInstance();
                 if (instance) {
-                    helper.addValidateEvent(instance);
+                    captchaHelper.addValidateEvent(instance);
                 } else {
-                    console.error('window.botdetect undefined');
+                    console.error('window.botdetect undefined.');
                 }
             })
         });
@@ -40,14 +40,13 @@ class Captcha extends React.Component {
 
     loadScriptIncludes(styleName, callback) {
         let captchaId = document.getElementById('BDC_VCID_' + styleName).value;
-        let scriptIncludeUrl = settings.get().captchaEndpoint + '?get=script-include&c=' + styleName + '&t=' + captchaId + '&cs=203';
-        helper.getScript(scriptIncludeUrl, callback);
+        let scriptIncludeUrl = captchaSettings.get().captchaEndpoint + '?get=script-include&c=' + styleName + '&t=' + captchaId + '&cs=203';
+        captchaHelper.getScript(scriptIncludeUrl, callback);
     }
 
     render() {
-        let self = this;
         return (
-            <div id={'BDC_CaptchaComponent_' + self.props.styleName}></div>
+            <div id={'BDC_CaptchaComponent_' + this.props.styleName}></div>
         );
     }
 }

@@ -9,8 +9,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var React = require('react');
-var settings = require('./captcha-settings');
-var helper = require('./captcha-helper');
+var captchaSettings = require('./captcha-settings');
+var captchaHelper = require('./captcha-helper');
 
 var Captcha = function (_React$Component) {
     _inherits(Captcha, _React$Component);
@@ -33,24 +33,24 @@ var Captcha = function (_React$Component) {
     }, {
         key: 'componentWillMount',
         value: function componentWillMount() {
-            helper.addCustomEventPolyfill();
+            captchaHelper.addCustomEventPolyfill();
         }
     }, {
         key: 'componentDidMount',
         value: function componentDidMount() {
             var self = this;
             var captchaStyleName = self.props.styleName || 'defaultCaptcha';
-            var url = settings.get().captchaEndpoint + '?get=html&c=' + captchaStyleName;
+            var url = captchaSettings.get().captchaEndpoint + '?get=html&c=' + captchaStyleName;
 
-            helper.ajax(url, function (data) {
+            captchaHelper.ajax(url, function (data) {
                 var target = document.getElementById('BDC_CaptchaComponent_' + captchaStyleName);
                 target.innerHTML = data.replace(/<script.*<\/script>/g, '');
                 self.loadScriptIncludes(captchaStyleName, function () {
                     var instance = self.getInstance();
                     if (instance) {
-                        helper.addValidateEvent(instance);
+                        captchaHelper.addValidateEvent(instance);
                     } else {
-                        console.error('window.botdetect undefined');
+                        console.error('window.botdetect undefined.');
                     }
                 });
             });
@@ -59,14 +59,13 @@ var Captcha = function (_React$Component) {
         key: 'loadScriptIncludes',
         value: function loadScriptIncludes(styleName, callback) {
             var captchaId = document.getElementById('BDC_VCID_' + styleName).value;
-            var scriptIncludeUrl = settings.get().captchaEndpoint + '?get=script-include&c=' + styleName + '&t=' + captchaId + '&cs=203';
-            helper.getScript(scriptIncludeUrl, callback);
+            var scriptIncludeUrl = captchaSettings.get().captchaEndpoint + '?get=script-include&c=' + styleName + '&t=' + captchaId + '&cs=203';
+            captchaHelper.getScript(scriptIncludeUrl, callback);
         }
     }, {
         key: 'render',
         value: function render() {
-            var self = this;
-            return React.createElement('div', { id: 'BDC_CaptchaComponent_' + self.props.styleName });
+            return React.createElement('div', { id: 'BDC_CaptchaComponent_' + this.props.styleName });
         }
     }]);
 
