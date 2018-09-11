@@ -96,7 +96,7 @@ var Captcha = function (_React$Component) {
             var instance = this.getInstance();
             captchaHelper.validateUnSafe(instance, function (isHuman) {
                 callback(isHuman);
-                if (!isHuman) {
+                if (!captchaHelper.useUserInputBlurValidation(instance.userInput) && !isHuman) {
                     instance.reloadImage();
                 }
             });

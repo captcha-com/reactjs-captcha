@@ -20,22 +20,19 @@ module.exports.getScript = function (url, callback) {
 module.exports.addValidateEvent = function (captchaInstance) {
     var self = this;
     var userInput = captchaInstance.userInput;
-    if (userInput) {
-        var useUserInputBlurValidation = userInput.getAttribute('data-correct-captcha');
-        if (useUserInputBlurValidation) {
-            userInput.onblur = function () {
-                var captchaCode = userInput.value;
-                if (captchaCode.length !== 0) {
-                    self.validateUnSafe(captchaInstance, function (isHuman) {
-                        var event = new CustomEvent('validatecaptcha', { detail: isHuman });
-                        userInput.dispatchEvent(event);
-                        if (!isHuman) {
-                            captchaInstance.reloadImage();
-                        }
-                    });
-                }
-            };
-        }
+    if (userInput && this.useUserInputBlurValidation(userInput)) {
+        userInput.onblur = function () {
+            var captchaCode = userInput.value;
+            if (captchaCode.length !== 0) {
+                self.validateUnSafe(captchaInstance, function (isHuman) {
+                    var event = new CustomEvent('validatecaptcha', { detail: isHuman });
+                    userInput.dispatchEvent(event);
+                    if (!isHuman) {
+                        captchaInstance.reloadImage();
+                    }
+                });
+            }
+        };
     }
 };
 
@@ -45,6 +42,11 @@ module.exports.validateUnSafe = function (captchaInstance, callback) {
         isHuman = isHuman == 'true';
         callback(isHuman);
     });
+};
+
+module.exports.useUserInputBlurValidation = function (userInput) {
+    var attr = userInput.getAttribute('data-correct-captcha');
+    return attr !== null && attr !== '';
 };
 
 module.exports.ajax = function (url, callback) {
