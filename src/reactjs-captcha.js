@@ -3,7 +3,7 @@ var captchaSettings = require('./captcha-settings');
 var captchaHelper = require('./captcha-helper');
 
 class Captcha extends React.Component {
-    
+
     constructor(props) {
         super(props);
     }
@@ -45,9 +45,29 @@ class Captcha extends React.Component {
         });
     }
 
+    // the current captcha id, which will be used for server-side validation purpose.
+    getCaptchaId() {
+        return this.getInstance().captchaId;
+    }
+
+    // the typed captcha code value.
+    getCaptchaCode() {
+        return this.getInstance().userInput.value;
+    }
+
     // reload a new captcha image.
     reloadImage() {
         this.getInstance().reloadImage();
+    }
+
+    validateUnSafe(callback) {
+        let instance = this.getInstance();
+        captchaHelper.validateUnSafe(instance, function(isHuman) {
+            callback(isHuman);
+            if (!isHuman) {
+                instance.reloadImage();
+            }
+        });
     }
 
     // load BotDetect scripts.

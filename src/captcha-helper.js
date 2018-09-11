@@ -15,27 +15,34 @@ module.exports.getScript = function(url, callback) {
     });
 };
 
-module.exports.addValidateEvent = function(instance) {
+module.exports.addValidateEvent = function(captchaInstance) {
     var self = this;
-    var userInput = instance.userInput;
+    var userInput = captchaInstance.userInput;
     if (userInput) {
         var useUserInputBlurValidation = userInput.getAttribute('data-correct-captcha');
         if (useUserInputBlurValidation) {
             userInput.onblur = function() {
                 var captchaCode = userInput.value;
                 if (captchaCode.length !== 0) {
-                    self.ajax(instance.validationUrl + '&i=' + captchaCode, function(isHuman) {
-                        isHuman = (isHuman == 'true');
-                        var event = new CustomEvent('validatecaptcha', {detail: isHuman});
+                    self.validateUnSafe(captchaInstance, function(isHuman) {
+                        var event = new CustomEvent('validatecaptcha', { detail: isHuman });
                         userInput.dispatchEvent(event);
                         if (!isHuman) {
-                            instance.reloadImage();
+                            captchaInstance.reloadImage();
                         }
-                    })
+                    });
                 }
             };
         }
     }
+};
+
+module.exports.validateUnSafe = function(captchaInstance, callback) {
+    var captchaCode = captchaInstance.userInput.value;
+    this.ajax(captchaInstance.validationUrl + '&i=' + captchaCode, function(isHuman) {
+        isHuman = (isHuman == 'true');
+        callback(isHuman);
+    });
 };
 
 module.exports.ajax = function(url, callback) {
