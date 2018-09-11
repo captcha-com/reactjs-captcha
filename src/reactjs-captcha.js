@@ -64,7 +64,7 @@ class Captcha extends React.Component {
         let instance = this.getInstance();
         captchaHelper.validateUnSafe(instance, function(isHuman) {
             callback(isHuman);
-            if (!isHuman) {
+            if (!captchaHelper.useUserInputBlurValidation(instance.userInput) && !isHuman) {
                 instance.reloadImage();
             }
         });
