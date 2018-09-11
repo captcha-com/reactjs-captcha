@@ -22,6 +22,19 @@ var Captcha = function (_React$Component) {
     }
 
     _createClass(Captcha, [{
+        key: 'componentWillMount',
+        value: function componentWillMount() {
+            captchaHelper.addCustomEventPolyfill();
+        }
+    }, {
+        key: 'componentDidMount',
+        value: function componentDidMount() {
+            this.displayHtml();
+        }
+
+        // get BotDetect client-side instance.
+
+    }, {
         key: 'getInstance',
         value: function getInstance() {
             var instance = null;
@@ -30,14 +43,12 @@ var Captcha = function (_React$Component) {
             }
             return instance;
         }
+
+        // display captcha html markup.
+
     }, {
-        key: 'componentWillMount',
-        value: function componentWillMount() {
-            captchaHelper.addCustomEventPolyfill();
-        }
-    }, {
-        key: 'componentDidMount',
-        value: function componentDidMount() {
+        key: 'displayHtml',
+        value: function displayHtml() {
             var self = this;
             var captchaStyleName = self.props.styleName || 'defaultCaptcha';
             var url = captchaSettings.get().captchaEndpoint + '?get=html&c=' + captchaStyleName;
@@ -55,6 +66,44 @@ var Captcha = function (_React$Component) {
                 });
             });
         }
+
+        // the current captcha id, which will be used for server-side validation purpose.
+
+    }, {
+        key: 'getCaptchaId',
+        value: function getCaptchaId() {
+            return this.getInstance().captchaId;
+        }
+
+        // the typed captcha code value.
+
+    }, {
+        key: 'getCaptchaCode',
+        value: function getCaptchaCode() {
+            return this.getInstance().userInput.value;
+        }
+
+        // reload a new captcha image.
+
+    }, {
+        key: 'reloadImage',
+        value: function reloadImage() {
+            this.getInstance().reloadImage();
+        }
+    }, {
+        key: 'validateUnSafe',
+        value: function validateUnSafe(callback) {
+            var instance = this.getInstance();
+            captchaHelper.validateUnSafe(instance, function (isHuman) {
+                callback(isHuman);
+                if (!isHuman) {
+                    instance.reloadImage();
+                }
+            });
+        }
+
+        // load BotDetect scripts.
+
     }, {
         key: 'loadScriptIncludes',
         value: function loadScriptIncludes(styleName, callback) {

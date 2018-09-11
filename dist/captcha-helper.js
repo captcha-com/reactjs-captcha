@@ -17,28 +17,34 @@ module.exports.getScript = function (url, callback) {
     });
 };
 
-module.exports.addValidateEvent = function (instance) {
+module.exports.addValidateEvent = function (captchaInstance) {
     var self = this;
-    var inputElm = document.getElementById(instance.options.userInputID);
-    if (inputElm) {
-        var attr = inputElm.getAttribute('data-correct-captcha');
-        if (attr) {
-            inputElm.onblur = function () {
-                var code = inputElm.value;
-                if (code.length > 0) {
-                    var params = 'i=' + code;
-                    self.ajax(instance.validationUrl + '&' + params, function (response) {
-                        response = response === 'false' ? false : true;
-                        var event = new CustomEvent('validatecaptcha', { detail: response });
-                        inputElm.dispatchEvent(event);
-                        if (!response) {
-                            instance.reloadImage();
+    var userInput = captchaInstance.userInput;
+    if (userInput) {
+        var useUserInputBlurValidation = userInput.getAttribute('data-correct-captcha');
+        if (useUserInputBlurValidation) {
+            userInput.onblur = function () {
+                var captchaCode = userInput.value;
+                if (captchaCode.length !== 0) {
+                    self.validateUnSafe(captchaInstance, function (isHuman) {
+                        var event = new CustomEvent('validatecaptcha', { detail: isHuman });
+                        userInput.dispatchEvent(event);
+                        if (!isHuman) {
+                            captchaInstance.reloadImage();
                         }
                     });
                 }
             };
         }
     }
+};
+
+module.exports.validateUnSafe = function (captchaInstance, callback) {
+    var captchaCode = captchaInstance.userInput.value;
+    this.ajax(captchaInstance.validationUrl + '&i=' + captchaCode, function (isHuman) {
+        isHuman = isHuman == 'true';
+        callback(isHuman);
+    });
 };
 
 module.exports.ajax = function (url, callback) {
