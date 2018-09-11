@@ -3,10 +3,20 @@ var captchaSettings = require('./captcha-settings');
 var captchaHelper = require('./captcha-helper');
 
 class Captcha extends React.Component {
+    
     constructor(props) {
         super(props);
     }
 
+    componentWillMount() {
+        captchaHelper.addCustomEventPolyfill();
+    }
+
+    componentDidMount() {
+        this.displayHtml();
+    }
+
+    // get BotDetect client-side instance.
     getInstance() {
         let instance = null;
         if (typeof window.botdetect !== 'undefined') {
@@ -15,11 +25,8 @@ class Captcha extends React.Component {
         return instance;
     }
 
-    componentWillMount() {
-        captchaHelper.addCustomEventPolyfill();
-    }
-
-    componentDidMount() {
+    // display captcha html markup.
+    displayHtml() {
         let self = this;
         let captchaStyleName = self.props.styleName || 'defaultCaptcha';
         let url = captchaSettings.get().captchaEndpoint + '?get=html&c=' + captchaStyleName;
@@ -38,6 +45,12 @@ class Captcha extends React.Component {
         });
     }
 
+    // reload a new captcha image.
+    reloadImage() {
+        this.getInstance().reloadImage();
+    }
+
+    // load BotDetect scripts.
     loadScriptIncludes(styleName, callback) {
         let captchaId = document.getElementById('BDC_VCID_' + styleName).value;
         let scriptIncludeUrl = captchaSettings.get().captchaEndpoint + '?get=script-include&c=' + styleName + '&t=' + captchaId + '&cs=203';

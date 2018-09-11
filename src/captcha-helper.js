@@ -17,19 +17,18 @@ module.exports.getScript = function(url, callback) {
 
 module.exports.addValidateEvent = function(instance) {
     var self = this;
-    var inputElm = document.getElementById(instance.options.userInputID);
-    if (inputElm) {
-        var attr = inputElm.getAttribute('data-correct-captcha');
-        if (attr) {
-            inputElm.onblur = function() {
-                var code = inputElm.value;
-                if (code.length > 0) {
-                    var params = 'i=' + code;
-                    self.ajax(instance.validationUrl + '&' + params, function(response) {
-                        response = response === 'false' ? false : true;
-                        var event = new CustomEvent('validatecaptcha', {detail: response});
-                        inputElm.dispatchEvent(event);
-                        if (!response) {
+    var userInput = instance.userInput;
+    if (userInput) {
+        var useUserInputBlurValidation = userInput.getAttribute('data-correct-captcha');
+        if (useUserInputBlurValidation) {
+            userInput.onblur = function() {
+                var captchaCode = userInput.value;
+                if (captchaCode.length !== 0) {
+                    self.ajax(instance.validationUrl + '&i=' + captchaCode, function(isHuman) {
+                        isHuman = (isHuman == 'true');
+                        var event = new CustomEvent('validatecaptcha', {detail: isHuman});
+                        userInput.dispatchEvent(event);
+                        if (!isHuman) {
                             instance.reloadImage();
                         }
                     })
