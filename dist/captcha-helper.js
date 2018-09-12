@@ -45,8 +45,7 @@ module.exports.validateUnSafe = function (captchaInstance, callback) {
 };
 
 module.exports.useUserInputBlurValidation = function (userInput) {
-    var attr = userInput.getAttribute('data-correct-captcha');
-    return attr !== null && attr !== '';
+    return userInput.getAttribute('data-correct-captcha') !== null;
 };
 
 module.exports.ajax = function (url, callback) {
