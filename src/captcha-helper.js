@@ -22,7 +22,7 @@ module.exports.addValidateEvent = function(captchaInstance) {
         userInput.onblur = function() {
             var captchaCode = userInput.value;
             if (captchaCode.length !== 0) {
-                self.validateUnSafe(captchaInstance, function(isHuman) {
+                self.validateUnsafe(captchaInstance, function(isHuman) {
                     var event = new CustomEvent('validatecaptcha', { detail: isHuman });
                     userInput.dispatchEvent(event);
                     if (!isHuman) {
@@ -34,7 +34,7 @@ module.exports.addValidateEvent = function(captchaInstance) {
     }
 };
 
-module.exports.validateUnSafe = function(captchaInstance, callback) {
+module.exports.validateUnsafe = function(captchaInstance, callback) {
     var captchaCode = captchaInstance.userInput.value;
     this.ajax(captchaInstance.validationUrl + '&i=' + captchaCode, function(isHuman) {
         isHuman = (isHuman == 'true');
