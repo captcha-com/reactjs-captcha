@@ -26,10 +26,16 @@ var Captcha = function (_React$Component) {
         value: function componentWillMount() {
             captchaHelper.addCustomEventPolyfill();
         }
+
+        // generate captcha html markup in view
+
     }, {
         key: 'componentDidMount',
         value: function componentDidMount() {
-            this.displayHtml();
+            if (captchaSettings.get().captchaEnabled) {
+                var captchaStyleName = this.props.styleName || 'defaultCaptcha';
+                this.displayHtml(captchaStyleName);
+            }
         }
 
         // get BotDetect client-side instance.
@@ -39,32 +45,10 @@ var Captcha = function (_React$Component) {
         value: function getInstance() {
             var instance = null;
             if (typeof window.botdetect !== 'undefined') {
-                return window.botdetect.getInstanceByStyleName(this.props.styleName);
+                var captchaStyleName = this.state && typeof this.state.styleName !== 'undefined' ? this.state.styleName : this.props.styleName;
+                instance = window.botdetect.getInstanceByStyleName(captchaStyleName);
             }
             return instance;
-        }
-
-        // display captcha html markup.
-
-    }, {
-        key: 'displayHtml',
-        value: function displayHtml() {
-            var self = this;
-            var captchaStyleName = self.props.styleName || 'defaultCaptcha';
-            var url = captchaSettings.get().captchaEndpoint + '?get=html&c=' + captchaStyleName;
-
-            captchaHelper.ajax(url, function (data) {
-                var target = document.getElementById('BDC_CaptchaComponent_' + captchaStyleName);
-                target.innerHTML = data.replace(/<script.*<\/script>/g, '');
-                self.loadScriptIncludes(captchaStyleName, function () {
-                    var instance = self.getInstance();
-                    if (instance) {
-                        captchaHelper.addValidateEvent(instance);
-                    } else {
-                        console.error('window.botdetect undefined.');
-                    }
-                });
-            });
         }
 
         // the current captcha id, which will be used for server-side validation purpose.
@@ -82,11 +66,20 @@ var Captcha = function (_React$Component) {
         value: function getCaptchaCode() {
             return this.getInstance().userInput.value;
         }
-
-        // reload a new captcha image.
-
+    }, {
+        key: 'displayHtml',
+        value: function displayHtml(styleName) {
+            var self = this;
+            captchaHelper.getHtml(styleName, captchaSettings.get().captchaEndpoint, function (captchaHtml) {
+                document.getElementById('BDC_CaptchaComponent').innerHTML = captchaHtml;
+                self.loadScriptIncludes(styleName);
+            });
+        }
     }, {
         key: 'reloadImage',
+
+
+        // reload a new captcha image.
         value: function reloadImage() {
             this.getInstance().reloadImage();
         }
@@ -102,19 +95,37 @@ var Captcha = function (_React$Component) {
             });
         }
 
+        // generate captcha markup manually
+
+    }, {
+        key: 'generateCaptchaMarkup',
+        value: function generateCaptchaMarkup(styleName) {
+            this.setState({ styleName: styleName });
+            this.displayHtml(styleName);
+        }
+
         // load BotDetect scripts.
 
     }, {
         key: 'loadScriptIncludes',
-        value: function loadScriptIncludes(styleName, callback) {
+        value: function loadScriptIncludes(styleName) {
+            var self = this;
             var captchaId = document.getElementById('BDC_VCID_' + styleName).value;
             var scriptIncludeUrl = captchaSettings.get().captchaEndpoint + '?get=script-include&c=' + styleName + '&t=' + captchaId + '&cs=203';
-            captchaHelper.getScript(scriptIncludeUrl, callback);
+            captchaHelper.getScript(scriptIncludeUrl, function () {
+                // register user input blur validation
+                var instance = self.getInstance();
+                if (instance) {
+                    captchaHelper.addValidateEvent(instance);
+                } else {
+                    console.error('window.botdetect undefined.');
+                }
+            });
         }
     }, {
         key: 'render',
         value: function render() {
-            return React.createElement('div', { id: 'BDC_CaptchaComponent_' + this.props.styleName });
+            return React.createElement('div', { id: 'BDC_CaptchaComponent' });
         }
     }]);
 
