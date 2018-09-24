@@ -12,37 +12,24 @@ class Captcha extends React.Component {
         captchaHelper.addCustomEventPolyfill();
     }
 
+    // generate captcha html markup in view
     componentDidMount() {
-        this.displayHtml();
+        if (captchaSettings.get().captchaEnabled) {
+            let captchaStyleName = this.props.styleName || 'defaultCaptcha';
+            this.displayHtml(captchaStyleName);
+        }
     }
 
     // get BotDetect client-side instance.
     getInstance() {
         let instance = null;
         if (typeof window.botdetect !== 'undefined') {
-            return window.botdetect.getInstanceByStyleName(this.props.styleName);
+            const captchaStyleName = (this.state && (typeof this.state.styleName !== 'undefined'))
+                ? this.state.styleName
+                : this.props.styleName;
+            instance = window.botdetect.getInstanceByStyleName(captchaStyleName);
         }
         return instance;
-    }
-
-    // display captcha html markup.
-    displayHtml() {
-        let self = this;
-        let captchaStyleName = self.props.styleName || 'defaultCaptcha';
-        let url = captchaSettings.get().captchaEndpoint + '?get=html&c=' + captchaStyleName;
-
-        captchaHelper.ajax(url, function(data) {
-            let target = document.getElementById('BDC_CaptchaComponent_' + captchaStyleName);
-            target.innerHTML = data.replace(/<script.*<\/script>/g, '');
-            self.loadScriptIncludes(captchaStyleName, function() {
-                let instance = self.getInstance();
-                if (instance) {
-                    captchaHelper.addValidateEvent(instance);
-                } else {
-                    console.error('window.botdetect undefined.');
-                }
-            })
-        });
     }
 
     // the current captcha id, which will be used for server-side validation purpose.
@@ -54,6 +41,14 @@ class Captcha extends React.Component {
     getCaptchaCode() {
         return this.getInstance().userInput.value;
     }
+
+    displayHtml(styleName) {
+        let self = this;
+        captchaHelper.getHtml(styleName, captchaSettings.get().captchaEndpoint, function(captchaHtml) {
+            document.getElementById('BDC_CaptchaComponent').innerHTML = captchaHtml;
+            self.loadScriptIncludes(styleName);
+        });
+    };
 
     // reload a new captcha image.
     reloadImage() {
@@ -70,16 +65,31 @@ class Captcha extends React.Component {
         });
     }
 
+    // generate captcha markup manually
+    generateCaptchaMarkup(styleName) {
+        this.setState({styleName: styleName});
+        this.displayHtml(styleName);
+    }
+
     // load BotDetect scripts.
-    loadScriptIncludes(styleName, callback) {
+    loadScriptIncludes(styleName) {
+        var self = this;
         let captchaId = document.getElementById('BDC_VCID_' + styleName).value;
         let scriptIncludeUrl = captchaSettings.get().captchaEndpoint + '?get=script-include&c=' + styleName + '&t=' + captchaId + '&cs=203';
-        captchaHelper.getScript(scriptIncludeUrl, callback);
+        captchaHelper.getScript(scriptIncludeUrl, function() {
+            // register user input blur validation
+            let instance = self.getInstance();
+            if (instance) {
+                captchaHelper.addValidateEvent(instance);
+            } else {
+                console.error('window.botdetect undefined.');
+            }
+        });
     }
 
     render() {
         return (
-            <div id={'BDC_CaptchaComponent_' + this.props.styleName}></div>
+            <div id='BDC_CaptchaComponent'></div>
         );
     }
 }

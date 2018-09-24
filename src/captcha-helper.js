@@ -46,6 +46,15 @@ module.exports.useUserInputBlurValidation = function(userInput) {
     return (userInput.getAttribute('data-correct-captcha') !== null);
 };
 
+module.exports.getHtml = function(captchaStyleName, captchaEndpoint, callback) {
+    var self = this;
+    var url =  captchaEndpoint + '?get=html&c=' + captchaStyleName;
+    this.ajax(url, function(data) {
+        var captchaHtml = data.replace(/<script.*<\/script>/g, '');;
+        callback(captchaHtml);
+    });
+};
+
 module.exports.ajax = function(url, callback) {
     function xhr() {
         var x = null;

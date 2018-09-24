@@ -1,6 +1,10 @@
 var captchaHelper = require('./captcha-helper');
 
-window.bdc_react_settings = window.bdc_react_settings || { captchaEndpoint: 'botdetectcaptcha' }
+window.bdc_react_settings = window.bdc_react_settings || { 
+    captchaEndpoint: '',
+    captchaEnabled: true
+};
+
 var captchaSettings = {
     config: window.bdc_react_settings,
     get: function() {
