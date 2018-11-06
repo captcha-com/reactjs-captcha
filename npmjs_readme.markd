@@ -1,7 +1,7 @@
 ## BotDetect Captcha React Component (JavaScript: React 0.13.x/0.14.x/15/16+)
 
 ### Requirements:
-BotDetect Captcha React Component generate Captcha challenges using [BotDetect Java](https://captcha.com/java-captcha.html) or [PHP Captcha](https://captcha.com/php-captcha.html) library on the back end. BotDetect ASP.NET (Core) Captcha backend is not yet supported  -- but the support is coming soon.
+BotDetect Captcha React Component requires [BotDetect ASP.NET Captcha](https://captcha.com/asp.net-captcha.html#simple-api), [BotDetect Java Captcha](https://captcha.com/java-captcha.html#simple-api) or [BotDetect PHP Captcha](https://captcha.com/php-captcha.html#simple-api) library to generate Captcha challenges. Simple API support for ASP.NET Core and .NET Core will be released this month -- very likely during the week of 2018/11/19-25. See our [roadmap](https://captcha.com/captcha-roadmap-and-release-notes.html#aspnet-release-notes) for details.
 
 ### Quick guide:
 
@@ -9,13 +9,16 @@ BotDetect Captcha React Component generate Captcha challenges using [BotDetect J
 ```sh
 npm install reactjs-captcha --save
 ```
-##### 2) Importing React Captcha Component into Your Component
+##### 2) Importing React Captcha Component into Your Component:
 ```js
 import { Captcha, captchaSettings } from 'reactjs-captcha';
 ```
 
-##### 3) Setting Captcha Endpoint:
-- Java Captcha endpoint:
+##### 3) Setting backend Captcha endpoint:
+
+Endpoint Configuration depends on which technology you use in the backend.
+
+- ASP.NET-based Captcha endpoint:
 ```js
 class Example extends React.Component {
 
@@ -23,7 +26,7 @@ class Example extends React.Component {
         super(props);
 
         captchaSettings.set({
-            captchaEndpoint: '/botdetect-java-captcha-api-path-at-server-side/botdetectcaptcha'
+            captchaEndpoint: 'captcha-endpoint/BotDetectCaptcha.ashx'
         });
     }
 
@@ -31,7 +34,7 @@ class Example extends React.Component {
 }
 ```
 
-- PHP Captcha endpoint:
+- Java-based Captcha endpoint:
 ```js
 class Example extends React.Component {
 
@@ -39,7 +42,23 @@ class Example extends React.Component {
         super(props);
 
         captchaSettings.set({
-            captchaEndpoint: '/botdetect-php-captcha-api-path-at-server-side/simple-botdetect.php'
+            captchaEndpoint: 'captcha-endpoint/botdetectcaptcha'
+        });
+    }
+
+    ...
+}
+```
+
+- PHP-based Captcha endpoint:
+```js
+class Example extends React.Component {
+
+    constructor(props) {
+        super(props);
+
+        captchaSettings.set({
+            captchaEndpoint: 'captcha-endpoint/simple-botdetect.php'
         });
     }
 
@@ -122,9 +141,21 @@ document.getElementById('captchaCode').addEventListener('validatecaptcha', funct
 ```
 
 ##### 6) Server-side Captcha validation:
-These client-side captcha validations are just an UI usability improvement that you may use or not -- they do not protect your form from spammers at all.
+These client-side captcha validations are just an usability improvement that you may use or not -- they do not protect your form from spammers at all.
 
 As you are protecting some server-side action you must validate a Captcha at the server-side before executing that protected action.
+
+- Server-side Captcha validation with [ASP.NET Captcha](https://captcha.com/asp.net-captcha.html#simple-api) is performed in the following way:
+```csharp
+// C#
+SimpleCaptcha captcha = new SimpleCaptcha();
+bool isHuman = captcha.Validate(captchaCode, captchaId);
+```
+```vbnet
+' VB.NET
+Dim captcha As SimpleCaptcha = New SimpleCaptcha()
+Dim isHuman As Boolean = captcha.Validate(captchaCode, captchaId)
+```
 
 - Server-side Captcha validation with [Java Captcha](https://captcha.com/java-captcha.html#simple-api) is performed in the following way:
 ```java
