@@ -33,9 +33,37 @@ var Captcha = function (_React$Component) {
         key: 'componentDidMount',
         value: function componentDidMount() {
             if (captchaSettings.get().captchaEnabled) {
-                var captchaStyleName = this.props.styleName || 'defaultCaptcha';
+                var captchaStyleName = this.getCaptchaStyleName();
                 this.displayHtml(captchaStyleName);
             }
+        }
+
+        // get captcha style name.
+
+    }, {
+        key: 'getCaptchaStyleName',
+        value: function getCaptchaStyleName() {
+            var styleName = void 0;
+
+            // the value can be set in generateCaptchaMarkup method
+            if (this.state && typeof this.state.captchaStyleName !== 'undefined') {
+                styleName = this.state.captchaStyleName;
+                return styleName;
+            }
+
+            styleName = this.props.captchaStyleName;
+            if (styleName) {
+                return styleName;
+            }
+
+            // backward compatible
+            styleName = this.props.styleName;
+            if (styleName) {
+                return styleName;
+            }
+
+            styleName = 'defaultCaptcha';
+            return styleName;
         }
 
         // get BotDetect client-side instance.
@@ -45,7 +73,7 @@ var Captcha = function (_React$Component) {
         value: function getInstance() {
             var instance = null;
             if (typeof window.botdetect !== 'undefined') {
-                var captchaStyleName = this.state && typeof this.state.styleName !== 'undefined' ? this.state.styleName : this.props.styleName;
+                var captchaStyleName = this.getCaptchaStyleName();
                 instance = window.botdetect.getInstanceByStyleName(captchaStyleName);
             }
             return instance;
@@ -68,18 +96,18 @@ var Captcha = function (_React$Component) {
         }
     }, {
         key: 'displayHtml',
-        value: function displayHtml(styleName) {
+        value: function displayHtml(captchaStyleName) {
             var self = this;
-            captchaHelper.getHtml(styleName, captchaSettings.get().captchaEndpoint, function (captchaHtml) {
+            captchaHelper.getHtml(captchaStyleName, captchaSettings.get().captchaEndpoint, function (captchaHtml) {
                 document.getElementById('BDC_CaptchaComponent').innerHTML = captchaHtml;
-                self.loadScriptIncludes(styleName);
+                self.loadScriptIncludes(captchaStyleName);
             });
         }
-    }, {
-        key: 'reloadImage',
-
 
         // reload a new captcha image.
+
+    }, {
+        key: 'reloadImage',
         value: function reloadImage() {
             this.getInstance().reloadImage();
         }
@@ -99,19 +127,19 @@ var Captcha = function (_React$Component) {
 
     }, {
         key: 'generateCaptchaMarkup',
-        value: function generateCaptchaMarkup(styleName) {
-            this.setState({ styleName: styleName });
-            this.displayHtml(styleName);
+        value: function generateCaptchaMarkup(captchaStyleName) {
+            this.setState({ captchaStyleName: captchaStyleName });
+            this.displayHtml(captchaStyleName);
         }
 
         // load BotDetect scripts.
 
     }, {
         key: 'loadScriptIncludes',
-        value: function loadScriptIncludes(styleName) {
+        value: function loadScriptIncludes(captchaStyleName) {
             var self = this;
-            var captchaId = document.getElementById('BDC_VCID_' + styleName).value;
-            var scriptIncludeUrl = captchaSettings.get().captchaEndpoint + '?get=script-include&c=' + styleName + '&t=' + captchaId + '&cs=203';
+            var captchaId = document.getElementById('BDC_VCID_' + captchaStyleName).value;
+            var scriptIncludeUrl = captchaSettings.get().captchaEndpoint + '?get=script-include&c=' + captchaStyleName + '&t=' + captchaId + '&cs=203';
             captchaHelper.getScript(scriptIncludeUrl, function () {
                 // register user input blur validation
                 var instance = self.getInstance();
