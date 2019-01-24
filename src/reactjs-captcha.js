@@ -15,18 +15,41 @@ class Captcha extends React.Component {
     // generate captcha html markup in view
     componentDidMount() {
         if (captchaSettings.get().captchaEnabled) {
-            let captchaStyleName = this.props.styleName || 'defaultCaptcha';
+            let captchaStyleName = this.getCaptchaStyleName();
             this.displayHtml(captchaStyleName);
         }
+    }
+
+    // get captcha style name.
+    getCaptchaStyleName() {
+        let styleName;
+
+        // the value can be set in generateCaptchaMarkup method
+        if (this.state && (typeof this.state.captchaStyleName !== 'undefined')) {
+            styleName = this.state.captchaStyleName;
+            return styleName;
+        }
+
+        styleName = this.props.captchaStyleName;
+        if (styleName) {
+            return styleName;
+        }
+
+        // backward compatible
+        styleName = this.props.styleName;
+        if (styleName) {
+            return styleName;
+        }
+
+        styleName = 'defaultCaptcha';
+        return styleName;
     }
 
     // get BotDetect client-side instance.
     getInstance() {
         let instance = null;
         if (typeof window.botdetect !== 'undefined') {
-            const captchaStyleName = (this.state && (typeof this.state.styleName !== 'undefined'))
-                ? this.state.styleName
-                : this.props.styleName;
+            const captchaStyleName = this.getCaptchaStyleName();
             instance = window.botdetect.getInstanceByStyleName(captchaStyleName);
         }
         return instance;
@@ -42,13 +65,13 @@ class Captcha extends React.Component {
         return this.getInstance().userInput.value;
     }
 
-    displayHtml(styleName) {
+    displayHtml(captchaStyleName) {
         let self = this;
-        captchaHelper.getHtml(styleName, captchaSettings.get().captchaEndpoint, function(captchaHtml) {
+        captchaHelper.getHtml(captchaStyleName, captchaSettings.get().captchaEndpoint, function(captchaHtml) {
             document.getElementById('BDC_CaptchaComponent').innerHTML = captchaHtml;
-            self.loadScriptIncludes(styleName);
+            self.loadScriptIncludes(captchaStyleName);
         });
-    };
+    }
 
     // reload a new captcha image.
     reloadImage() {
@@ -66,16 +89,16 @@ class Captcha extends React.Component {
     }
 
     // generate captcha markup manually
-    generateCaptchaMarkup(styleName) {
-        this.setState({styleName: styleName});
-        this.displayHtml(styleName);
+    generateCaptchaMarkup(captchaStyleName) {
+        this.setState({captchaStyleName: captchaStyleName});
+        this.displayHtml(captchaStyleName);
     }
 
     // load BotDetect scripts.
-    loadScriptIncludes(styleName) {
+    loadScriptIncludes(captchaStyleName) {
         var self = this;
-        let captchaId = document.getElementById('BDC_VCID_' + styleName).value;
-        let scriptIncludeUrl = captchaSettings.get().captchaEndpoint + '?get=script-include&c=' + styleName + '&t=' + captchaId + '&cs=203';
+        let captchaId = document.getElementById('BDC_VCID_' + captchaStyleName).value;
+        let scriptIncludeUrl = captchaSettings.get().captchaEndpoint + '?get=script-include&c=' + captchaStyleName + '&t=' + captchaId + '&cs=203';
         captchaHelper.getScript(scriptIncludeUrl, function() {
             // register user input blur validation
             let instance = self.getInstance();
