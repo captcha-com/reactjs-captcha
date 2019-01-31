@@ -60,9 +60,14 @@ class Captcha extends React.Component {
         return this.getInstance().captchaId;
     }
 
-    // the typed captcha code value.
+    // the user entered captcha code value.
+    // keep this method for backward compatibility
     getCaptchaCode() {
         return this.getInstance().userInput.value;
+    }
+
+    getUserEnteredCaptchaCode() {
+        return this.getCaptchaCode();
     }
 
     displayHtml(captchaStyleName) {
