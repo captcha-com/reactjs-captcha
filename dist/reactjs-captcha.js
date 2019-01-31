@@ -87,12 +87,18 @@ var Captcha = function (_React$Component) {
             return this.getInstance().captchaId;
         }
 
-        // the typed captcha code value.
+        // the user entered captcha code value.
+        // keep this method for backward compatibility
 
     }, {
         key: 'getCaptchaCode',
         value: function getCaptchaCode() {
             return this.getInstance().userInput.value;
+        }
+    }, {
+        key: 'getUserEnteredCaptchaCode',
+        value: function getUserEnteredCaptchaCode() {
+            return this.getCaptchaCode();
         }
     }, {
         key: 'displayHtml',
