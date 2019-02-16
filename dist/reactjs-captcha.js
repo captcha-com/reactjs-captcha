@@ -62,8 +62,7 @@ var Captcha = function (_React$Component) {
                 return styleName;
             }
 
-            styleName = 'defaultCaptcha';
-            return styleName;
+            throw new Error('The captchaStyleName attribute is not found or its value is not set.');
         }
 
         // get BotDetect client-side instance.
@@ -144,17 +143,20 @@ var Captcha = function (_React$Component) {
         key: 'loadScriptIncludes',
         value: function loadScriptIncludes(captchaStyleName) {
             var self = this;
-            var captchaId = document.getElementById('BDC_VCID_' + captchaStyleName).value;
-            var scriptIncludeUrl = captchaSettings.get().captchaEndpoint + '?get=script-include&c=' + captchaStyleName + '&t=' + captchaId + '&cs=203';
-            captchaHelper.getScript(scriptIncludeUrl, function () {
-                // register user input blur validation
-                var instance = self.getInstance();
-                if (instance) {
-                    captchaHelper.addValidateEvent(instance);
-                } else {
-                    console.error('window.botdetect undefined.');
-                }
-            });
+            var captchaIdElement = document.getElementById('BDC_VCID_' + captchaStyleName);
+            if (captchaIdElement) {
+                var captchaId = captchaIdElement.value;
+                var scriptIncludeUrl = captchaSettings.get().captchaEndpoint + '?get=script-include&c=' + captchaStyleName + '&t=' + captchaId + '&cs=203';
+                captchaHelper.getScript(scriptIncludeUrl, function () {
+                    // register user input blur validation
+                    var instance = self.getInstance();
+                    if (instance) {
+                        captchaHelper.addValidateEvent(instance);
+                    } else {
+                        console.error('window.botdetect undefined.');
+                    }
+                });
+            }
         }
     }, {
         key: 'render',

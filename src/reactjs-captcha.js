@@ -41,8 +41,7 @@ class Captcha extends React.Component {
             return styleName;
         }
 
-        styleName = 'defaultCaptcha';
-        return styleName;
+        throw new Error('The captchaStyleName attribute is not found or its value is not set.');
     }
 
     // get BotDetect client-side instance.
@@ -102,17 +101,20 @@ class Captcha extends React.Component {
     // load BotDetect scripts.
     loadScriptIncludes(captchaStyleName) {
         var self = this;
-        let captchaId = document.getElementById('BDC_VCID_' + captchaStyleName).value;
-        let scriptIncludeUrl = captchaSettings.get().captchaEndpoint + '?get=script-include&c=' + captchaStyleName + '&t=' + captchaId + '&cs=203';
-        captchaHelper.getScript(scriptIncludeUrl, function() {
-            // register user input blur validation
-            let instance = self.getInstance();
-            if (instance) {
-                captchaHelper.addValidateEvent(instance);
-            } else {
-                console.error('window.botdetect undefined.');
-            }
-        });
+        let captchaIdElement = document.getElementById('BDC_VCID_' + captchaStyleName);
+        if (captchaIdElement) {
+            let captchaId = captchaIdElement.value;
+            let scriptIncludeUrl = captchaSettings.get().captchaEndpoint + '?get=script-include&c=' + captchaStyleName + '&t=' + captchaId + '&cs=203';
+            captchaHelper.getScript(scriptIncludeUrl, function() {
+                // register user input blur validation
+                let instance = self.getInstance();
+                if (instance) {
+                    captchaHelper.addValidateEvent(instance);
+                } else {
+                    console.error('window.botdetect undefined.');
+                }
+            });
+        }
     }
 
     render() {
