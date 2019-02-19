@@ -49,10 +49,45 @@ module.exports.useUserInputBlurValidation = function(userInput) {
 module.exports.getHtml = function(captchaStyleName, captchaEndpoint, callback) {
     var self = this;
     var url =  captchaEndpoint + '?get=html&c=' + captchaStyleName;
-    this.ajax(url, function(data) {
-        var captchaHtml = data.replace(/<script.*<\/script>/g, '');;
+    this.ajax(url, function(captchaHtml) {
+        captchaHtml = self.changeRelativeToAbsoluteUrls(captchaHtml, captchaEndpoint);
         callback(captchaHtml);
     });
+};
+
+// get captcha endpoint handler from configued captchaEndpoint value,
+// the result can be "simple-captcha-endpoint.ashx", "botdetectcaptcha",
+// or "simple-botdetect.php"
+module.exports.getCaptchaEndpointHandler = function(captchaEndpoint) {
+    var splited = captchaEndpoint.split('/');
+    return splited[splited.length - 1];
+};
+
+// get backend base url from configued captchaEndpoint value
+module.exports.getBackendBaseUrl = function(captchaEndpoint, captchaEndpointHandler) {
+    var lastIndex = captchaEndpoint.lastIndexOf(captchaEndpointHandler);
+    return captchaEndpoint.substring(0, lastIndex);
+};
+
+// change relative to absolute urls in captcha html markup
+module.exports.changeRelativeToAbsoluteUrls = function(originCaptchaHtml, captchaEndpoint) {
+    var captchaEndpointHandler = this.getCaptchaEndpointHandler(captchaEndpoint);
+    var backendUrl = this.getBackendBaseUrl(captchaEndpoint, captchaEndpointHandler);
+
+    originCaptchaHtml = originCaptchaHtml.replace(/<script.*<\/script>/g, '');
+    var relativeUrls = originCaptchaHtml.match(/(src|href)=\"([^"]+)\"/g);
+    
+    var relativeUrl, relativeUrlPrefixPattern, absoluteUrl,
+        changedCaptchaHtml = originCaptchaHtml;
+
+    for (var i = 0; i < relativeUrls.length; i++) {
+        relativeUrl = relativeUrls[i].slice(0, -1).replace(/src=\"|href=\"/, '');
+        relativeUrlPrefixPattern = new RegExp(".*" + captchaEndpointHandler);
+        absoluteUrl = relativeUrl.replace(relativeUrlPrefixPattern, backendUrl + captchaEndpointHandler);
+        changedCaptchaHtml = changedCaptchaHtml.replace(relativeUrl, absoluteUrl);
+    }
+
+    return changedCaptchaHtml;
 };
 
 module.exports.ajax = function(url, callback) {
