@@ -26,6 +26,7 @@
     "url": "https://captcha.com/support"
   },
   "devDependencies": {
+    "@types/react": "^16.8.24",
     "react": "^0.13.0",
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.6.1",
