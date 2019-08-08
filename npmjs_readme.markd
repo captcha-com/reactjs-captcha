@@ -2,12 +2,12 @@
 
 For a comprehensive step-by-step integration guide please see our [React Captcha Component Integration Guide](https://captcha.com/react-captcha.html).  
 The guide covers the integration with the following backends:
-- ASP.NET (Core): web API with MVC6
+- ASP.NET (Core): web API with MVC Core
 - ASP.NET (Legacy): Web-API2, MVC1-5, Generic Handler
 - Java: Servlet, Spring, Struts
 - PHP: the plain PHP
 
-To give you a hint how React Captcha Component works we pasted a few, not necessary up-to-date (and mostly frontend related), excerpts from it bellow.
+To give you a hint how React Captcha Component works we pasted bellow a few, not necessary up-to-date (and mostly frontend related), excerpts from the Integration Guide.
 
 ### Quick guide:
 
@@ -149,24 +149,24 @@ The validation is performed by calling the: `Validate(userEnteredCaptchaCode, ca
 ```csharp
 // C#
 SimpleCaptcha yourFirstCaptcha = new SimpleCaptcha();
-bool isHuman = yourFirstCaptcha.Validate(captchaCode, captchaId);
+bool isHuman = yourFirstCaptcha.Validate(userEnteredCaptchaCode, captchaId);
 ```
 ```vbnet
 ' VB.NET
 Dim yourFirstCaptcha As SimpleCaptcha = New SimpleCaptcha()
-Dim isHuman As Boolean = yourFirstCaptcha.Validate(captchaCode, captchaId)
+Dim isHuman As Boolean = yourFirstCaptcha.Validate(userEnteredCaptchaCode, captchaId)
 ```
 
 - Server-side captcha validation with [Java Captcha](https://captcha.com/java-captcha.html) is performed in the following way:
 ```java
 SimpleCaptcha yourFirstCaptcha = SimpleCaptcha.load(request);
-boolean isHuman = yourFirstCaptcha.validate(captchaCode, captchaId);
+boolean isHuman = yourFirstCaptcha.validate(userEnteredCaptchaCode, captchaId);
 ```
 
 - Server-side captcha validation with [PHP Captcha](https://captcha.com/php-captcha.html) is performed in the following way:
 ```php
 $yourFirstCaptcha = new SimpleCaptcha();
-$isHuman = $yourFirstCaptcha->Validate($captchaCode, $captchaId);
+$isHuman = $yourFirstCaptcha->Validate($userEnteredCaptchaCode, $captchaId);
 ```
 
 ### Documentation:
@@ -181,9 +181,9 @@ $isHuman = $yourFirstCaptcha->Validate($captchaCode, $captchaId);
 ### Dependencies:
 
 The current version of the React Captcha Component requires one of the following BotDetect CAPTCHA backends:
-- [ASP.NET v4.4.1+](https://captcha.com/asp.net-captcha.html)
-- [Java v4.0.Beta3.6+](https://captcha.com/java-captcha.html)
-- [PHP v4.2.4+](https://captcha.com/php-captcha.html)
+- [ASP.NET v4.4.2+](https://captcha.com/asp.net-captcha.html)
+- [Java v4.0.Beta3.7+](https://captcha.com/java-captcha.html)
+- [PHP v4.2.5+](https://captcha.com/php-captcha.html)
 
 ### Technical Support:
 
